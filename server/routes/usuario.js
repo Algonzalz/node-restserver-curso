@@ -2,9 +2,10 @@ const express = require('express');
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcrypt') // eccriptar
 const _ = require('underscore'); // libreria para solo tomar los elementos del obejto al que quiero actualñzar
+const { verificaToken } = require('../middlewares/auth');
 const app = express();
 
-app.get('/usuario', (req, res) => {
+app.get('/usuario', verificaToken, (req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -37,7 +38,7 @@ app.get('/usuario', (req, res) => {
         })
 });
 
-app.post('/usuario', (req, res) => {
+app.post('/usuario', verificaToken, (req, res) => {
 
     let body = req.body;
 
@@ -71,7 +72,7 @@ app.post('/usuario', (req, res) => {
 
 });
 
-app.put('/usuario/:id', (req, res) => {
+app.put('/usuario/:id', verificaToken, (req, res) => {
     let id = req.params.id
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
 
@@ -98,9 +99,10 @@ app.put('/usuario/:id', (req, res) => {
 
 });
 
-app.delete('/usuario/:id', (req, res) => {
+app.delete('/usuario/:id', verificaToken, (req, res) => {
     let id = req.params.id
 
+    // no elimina completamente el objeto, solo lo cambia de estado
     let estadoCambiado = {
         estado: false
     }
